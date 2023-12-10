@@ -1,0 +1,22 @@
+--- Table SQL data ---
+SafeGaze table data from the database was exported to:
+C:\Users\Reece Davies\Documents\Computer Science\Year 3\COMP3000 - Computing Project\COMP3000-Assignment-Reece_Davies\Database SQL code\
+Titled: A2 HOSTING safegaze_database (CONTAINS TABLE DATA).sql
+
+
+--- Updated database ERD ---
+Showing updated ERD for database in:
+C:\Users\Reece Davies\Documents\Computer Science\Year 3\COMP3000 - Computing Project\COMP3000-Assignment-Reece_Davies\Database design
+Titled: Screenshot (A2 hosting) (22.03.08).png
+
+
+--- Coding changes for hosting ---
+Notes txt file detailing changes made in code in:
+C:\Users\Reece Davies\Documents\Computer Science\Year 3\COMP3000 - Computing Project\COMP3000-Assignment-Reece_Davies
+Titled: Changes for A2 HOSTING.txt
+
+
+--- ETA's login info ---
+Txt file for ETA's and my login details for A2 Hosting, in:
+C:\Users\Reece Davies\Documents\Computer Science\Year 3\COMP3000 - Computing Project\COMP3000-Assignment-Reece_Davies
+Titled: ETA SafeGaze test account.txt

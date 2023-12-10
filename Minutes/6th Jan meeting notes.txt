@@ -1,0 +1,5 @@
+YouTube would make sense. If that doesn't work you could potentially look into a downloadable client. Web conferencing need the client. So two parts (HTML + Client). (E.g using zoom and the website creates a zoom session for people to watch and then the recording is then available on your website).
+
+Also look into how to encode your video to your computer (https://colorwhistle.com/live-stream-video-on-website/).
+
+Guide for youtube livestream (https://www.youtube.com/watch?v=gch4ReBTirI) - Elgato Cam Link

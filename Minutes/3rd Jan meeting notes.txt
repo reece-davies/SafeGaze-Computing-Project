@@ -1,0 +1,20 @@
+Ordered new hardware (capture device) - researched it and got it working with livestreaming directly to youtube
+
+Started working on livestream functionality (confusing and tedious)
+	- Facility livestream page: create new livestream + view their livestreams
+							    ^ later connected to DB
+
+	- Member's functionality for livestreams (access times, etc)
+
+Also added a lot of screenshots of the development process. Would these be useful in the report and what would be best practise for this?
+	- Keep hold of critical screenshots
+	- Put other ones in the appendix
+
+YouTube or other private streaming service
+	- Can use YouTube as a "viable proof of concept"
+	- State how this can grow (conclusions, limitations, future work, ammendments)
+
+Next steps:
+	- Added functionality
+	- Decide method of approach for livestream
+	- Do more work on report + general things stated in the meeting earlier today (showcase material planning)

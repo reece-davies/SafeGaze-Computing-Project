@@ -1,0 +1,9 @@
+COMP3000-Assignment-Reece_Davies
+Useful git commands: https://confluence.atlassian.com/bitbucketserver/basic-git-commands-776639767.html
+
+git clone https://github.com/reecedavies/COMP3000-Assignment-Reece_Davies.git
+git add *   or   git add <file>
+git commit -m "commit comment"
+git push
+
+git status

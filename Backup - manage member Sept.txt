@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <?php include ("./inc/head.inc.php"); ?>
+
+  <body>
+    <?php include ("./inc/navbar.inc.php"); ?>
+
+    <div class="container-fluid">
+      <div class="row">
+
+        <?php include ("./inc/side-navbar.inc.php"); ?>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+
+        <?php
+
+        $memberId = $_GET['memberid'];
+        //echo '<p>Member ID = '. $memberId .'</p>';
+
+        require 'php/dbh.inc.php';
+
+        $sql = "SELECT * FROM members where facility_id=" . $_SESSION['facilityId'] . " AND member_id=" . $memberId;
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql))
+        {
+            //header("Location: /manage-member.php?error=sqlerror");
+            echo '<h1 data-wow-delay="0.1s" style="color: red;"> THERE HAS BEEN AN ERROR </h1>';
+            exit();
+        }
+        else
+        {
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+
+            $noValue = TRUE;
+                              
+            while ($row = mysqli_fetch_assoc($result))
+            {
+              // echo '<h1 onclick="changeProgramme('. $proId . ')" class="wow fadeInUp" data-wow-delay="0.1s" style="cursor: pointer;">'. $row["programme_title"] . '</h1>';
+
+              //$memberId;
+              $memberUsername = $row["member_username"];
+              $memberEmail = $row["email_address"];
+              $memberFirstName = $row["first_name"];
+              $memberLastName = $row["last_name"];
+              $memberDOB = $row["date_of_birth"];
+              $memberGender = $row["gender"];
+              $memberStatus = $row["status"];
+
+
+              if ($memberGender == null)
+              {
+                $memberGender = "NULL";
+              }
+
+              if ($memberDOB == null)
+              {
+                $memberDOB = "NULL";
+              }
+
+
+              
+              $noValue = FALSE;
+
+            }
+
+            // If the value does not exist or belongs to someone else
+            if ($noValue == TRUE)
+            {
+              echo '<h1 data-wow-delay="0.1s" style="color: red;"> THERE HAS BEEN AN ERROR </h1>';
+              exit();
+            }
+
+
+
+            // Echo details
+            echo '
+            <h2>Member : <a class="facility-colour isDisabled">'. $memberFirstName .' ' . $memberLastName . '</a></h2>
+
+            <div style="padding-top: 1rem; padding-bottom: 1rem;">
+              <ul class="list-group">
+                <!-- <li class="list-group-item active">Member ID: </li> -->
+                <li class="list-group-item"><b>Member ID: </b>' . $memberId . '</li>
+                <li class="list-group-item"><b>Username: </b>' . $memberUsername . '</li>
+                <li class="list-group-item"><b>Email: </b>' . $memberEmail . '</li>
+                <li class="list-group-item"><b>First name: </b>' . $memberFirstName . '</li>
+                <li class="list-group-item"><b>Last name: </b>' . $memberLastName . '</li>
+                <li class="list-group-item"><b>Date of birth: </b>' . $memberDOB . '</li>
+                <li class="list-group-item"><b>Gender: </b>' . $memberGender . '</li>';
+
+
+                if ($memberStatus == "active")
+                {
+                  echo '
+                      <li class="list-group-item"><b>Status: <div style="display: inline; color: #28a745;"> ACTIVE </div></b></li>
+                    </ul>
+                  </div>';
+                }
+                else if ($memberStatus == "inactive")
+                {
+                  echo '
+                      <li class="list-group-item"><b>Status: <div style="display: inline; color: #ffc107;"> INACTIVE </div></b></li>
+                    </ul>
+                  </div>';
+                }
+                else if ($memberStatus == "declined")
+                {
+                  echo '
+                      <li class="list-group-item"><b>Status: <div style="display: inline; color: red;"> DECLINED </div></b></li>
+                    </ul>
+                  </div>';
+                }
+                else
+                {
+                  echo '
+                      <li class="list-group-item"><b>Status: <div style="display: inline; color: #00aeda;"> PENDING </div></b></li>
+                    </ul>
+                  </div>';
+                }
+                
+
+
+            // Echo 'Change status' section
+            echo '
+            <form style="padding-top: 1rem; padding-bottom: 1rem;" action="php/change-member-status.inc.php" method="post">
+              <input type="hidden" name="memberid" value="'.  $memberId .'">
+              <select class="custom-select" name="inputStatus" required>
+                <option value="" selected>Select member status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+              <button style="margin-top: 1rem;" class="btn btn-lg btn-cyan btn-block" type="submit" name="change-member-status-submit">Change status</button>
+            </form>
+            ';
+
+            
+            //////////////////////////////// DISPLAY NEW ACCESS TIMES ////////////////////////////////
+            $confirmation = "return confirm('Are you sure you want to remove this access time?');";
+
+            ///////////////////////
+            // TIME SLOT: MONDAY //
+            ///////////////////////
+            $sql = "SELECT * FROM mon_times where member_id=" . $memberId;
+            $stmt = mysqli_stmt_init($conn);
+
+            if (!mysqli_stmt_prepare($stmt, $sql))
+            {
+              //header("Location: /manage-member.php?error=sqlerror");
+              echo '<h1 data-wow-delay="0.1s" style="color: red;"> THERE HAS BEEN AN ERROR </h1>';
+              exit();
+            }
+            else
+            {
+              mysqli_stmt_execute($stmt);
+              $result = mysqli_stmt_get_result($stmt);
+
+              echo '
+              <h2 style="padding-top:2rem;" >Access Times</h2>
+
+              <div>
+                <div class="row">
+                  <div class="col">
+                    <h5>Mon</h5>
+                    <ul class="list-group">';
+                                
+              while ($row = mysqli_fetch_assoc($result))
+              {
+                $accessId = $row["access_id"];
+                $startTime = $row["start_time"];
+                $endTime = $row["end_time"];
+                //echo '<li class="list-group-item">'.$accessId.' - '.$startTime.' - '.$endTime.'</li>';
+
+                echo '
+                <li class="list-group-item">
+                  <form action="php/change-member-status.inc.php" method="post" onsubmit="'.$confirmation.'">
+                    <input type="hidden" name="dayName" value="mon_times">
+                    <input type="hidden" name="accessId" value="'. $accessId .'">
+                    <input type="hidden" name="memberId" value="'. $memberId .'">
+                    '. $startTime.' - '.$endTime.'
+                    <button class="btn btn-sm btn-actions btn-danger" type="submit" name="delete-access-time-submit" style="float: right; padding: 1px 0.5rem; margin: 0px;">Delete</button>
+                  </form>                
+                </li>';
+
+                /*
+                <form action="php/manage-livestreams.inc.php" method="post" onsubmit="'.$confirmation.'">
+                  <input type="hidden" name="livestreamid" value="'. $livestreamId .'">
+                  <div onclick="editLivestream('.$livestreamId.')" class="btn btn-sm btn-actions btn-cyan">Edit</div>
+                  <button class="btn btn-sm btn-actions btn-danger" type="submit" name="delete-livestream-submit">Delete</button>
+                </form>
+                */
+              }
+
+              // $resultCheck = mysqli_stmt_num_rows($stmt);
+              if (mysqli_num_rows ($result) == 0)
+              {
+                echo '<li class="list-group-item" style="color: red;">NULL</li>';
+              }
+
+              echo '
+              </ul>
+                </div>';
+
+            }
+
+            ////////////////////////
+            // TIME SLOT: TUESDAY //
+            ////////////////////////
+            $sql = "SELECT * FROM tue_times where member_id=" . $memberId;
+            $stmt = mysqli_stmt_init($conn);
+
+            if (!mysqli_stmt_prepare($stmt, $sql))
+            {
+              //header("Location: /manage-member.php?error=sqlerror");
+              echo '<h1 data-wow-delay="0.1s" style="color: red;"> THERE HAS BEEN AN ERROR </h1>';
+              exit();
+            }
+            else
+            {
+              mysqli_stmt_execute($stmt);
+              $result = mysqli_stmt_get_result($stmt);
+
+
+              echo '
+              <div class="col">
+                  <h5>Tue</h5>
+                  <ul class="list-group">
+              ';
+                                
+              while ($row = mysqli_fetch_assoc($result))
+              {
+                $accessId = $row["access_id"];
+                $startTime = $row["start_time"];
+                $endTime = $row["end_time"];
+
+                echo '
+                <li class="list-group-item">
+                  <form action="php/change-member-status.inc.php" method="post" onsubmit="'.$confirmation.'">
+                    <input type="hidden" name="dayName" value="tue_times">
+                    <input type="hidden" name="accessId" value="'. $accessId .'">
+                    <input type="hidden" name="memberId" value="'. $memberId .'">
+                    '. $startTime.' - '.$endTime.'
+                    <button class="btn btn-sm btn-actions btn-danger" type="submit" name="delete-access-time-submit" style="float: right; padding: 1px 0.5rem; margin: 0px;">Delete</button>
+                  </form>                
+                </li>';
+              }
+
+              // $resultCheck = mysqli_stmt_num_rows($stmt);
+              if (mysqli_num_rows ($result) == 0)
+              {
+                echo '<li class="list-group-item" style="color: red;">NULL</li>';
+              }
+
+              echo '
+              </ul>
+                </div>';
+
+            }
+
+
+            //////////////////////////
+            // TIME SLOT: WEDNESDAY //
+            //////////////////////////
+            $sql = "SELECT * FROM wed_times where member_id=" . $memberId;
+            $stmt = mysqli_stmt_init($conn);
+
+            if (!mysqli_stmt_prepare($stmt, $sql))
+            {
+              //header("Location: /manage-member.php?error=sqlerror");
+              echo '<h1 data-wow-delay="0.1s" style="color: red;"> THERE HAS BEEN AN ERROR </h1>';
+              exit();
+            }
+            else
+            {
+              mysqli_stmt_execute($stmt);
+              $result = mysqli_stmt_get_result($stmt);
+
+              echo '
+              <div class="col">
+                  <h5>Wed</h5>
+                  <ul class="list-group">
+              ';
+                                
+              while ($row = mysqli_fetch_assoc($result))
+              {
+                $accessId = $row["access_id"];
+                $startTime = $row["start_time"];
+                $endTime = $row["end_time"];
+
+                echo '
+                <li class="list-group-item">
+                  <form action="php/change-member-status.inc.php" method="post" onsubmit="'.$confirmation.'">
+                    <input type="hidden" name="dayName" value="wed_times">
+                    <input type="hidden" name="accessId" value="'. $accessId .'">
+                    <input type="hidden" name="memberId" value="'. $memberId .'">
+                    '. $startTime.' - '.$endTime.'
+                    <button class="btn btn-sm btn-actions btn-danger" type="submit" name="delete-access-time-submit" style="float: right; padding: 1px 0.5rem; margin: 0px;">Delete</button>
+                  </form>                
+                </li>';
+              }
+
+              // $resultCheck = mysqli_stmt_num_rows($stmt);
+              if (mysqli_num_rows ($result) == 0)
+              {
+                echo '<li class="list-group-item" style="color: red;">NULL</li>';
+              }
+
+              echo '
+              </ul>
+                </div>
+                </div>';
+
+            }
+
+
+            /////////////////////////
+            // TIME SLOT: THURSDAY //
+            /////////////////////////
+            $sql = "SELECT * FROM thu_times where member_id=" . $memberId;
+            $stmt = mysqli_stmt_init($conn);
+
+            if (!mysqli_stmt_prepare($stmt, $sql))
+            {
+              //header("Location: /manage-member.php?error=sqlerror");
+              echo '<h1 data-wow-delay="0.1s" style="color: red;"> THERE HAS BEEN AN ERROR </h1>';
+              exit();
+            }
+            else
+            {
+              mysqli_stmt_execute($stmt);
+              $result = mysqli_stmt_get_result($stmt);
+
+
+              echo '
+              <div style="padding-top: 1.5rem;">
+                <div class="row">
+                  <div class="col">
+                    <h5>Thu</h5>
+                    <ul class="list-group">
+              ';
+                                
+              while ($row = mysqli_fetch_assoc($result))
+              {
+                $accessId = $row["access_id"];
+                $startTime = $row["start_time"];
+                $endTime = $row["end_time"];
+
+                echo '
+                <li class="list-group-item">
+                  <form action="php/change-member-status.inc.php" method="post" onsubmit="'.$confirmation.'">
+                    <input type="hidden" name="dayName" value="thu_times">
+                    <input type="hidden" name="accessId" value="'. $accessId .'">
+                    <input type="hidden" name="memberId" value="'. $memberId .'">
+                    '. $startTime.' - '.$endTime.'
+                    <button class="btn btn-sm btn-actions btn-danger" type="submit" name="delete-access-time-submit" style="float: right; padding: 1px 0.5rem; margin: 0px;">Delete</button>
+                  </form>                
+                </li>';
+              }
+
+              // $resultCheck = mysqli_stmt_num_rows($stmt);
+              if (mysqli_num_rows ($result) == 0)
+              {
+                echo '<li class="list-group-item" style="color: red;">NULL</li>';
+              }
+
+              echo '
+              </ul>
+                  </div>';
+
+            }
+
+            ///////////////////////
+            // TIME SLOT: FRIDAY //
+            ///////////////////////
+            $sql = "SELECT * FROM fri_times where member_id=" . $memberId;
+            $stmt = mysqli_stmt_init($conn);
+
+            if (!mysqli_stmt_prepare($stmt, $sql))
+            {
+              //header("Location: /manage-member.php?error=sqlerror");
+              echo '<h1 data-wow-delay="0.1s" style="color: red;"> THERE HAS BEEN AN ERROR </h1>';
+              exit();
+            }
+            else
+            {
+              mysqli_stmt_execute($stmt);
+              $result = mysqli_stmt_get_result($stmt);
+
+
+              echo '
+              <div class="col">
+                    <h5>Fri</h5>
+                    <ul class="list-group">
+              ';
+                                
+              while ($row = mysqli_fetch_assoc($result))
+              {
+                $accessId = $row["access_id"];
+                $startTime = $row["start_time"];
+                $endTime = $row["end_time"];
+
+                echo '
+                <li class="list-group-item">
+                  <form action="php/change-member-status.inc.php" method="post" onsubmit="'.$confirmation.'">
+                    <input type="hidden" name="dayName" value="fri_times">
+                    <input type="hidden" name="accessId" value="'. $accessId .'">
+                    <input type="hidden" name="memberId" value="'. $memberId .'">
+                    '. $startTime.' - '.$endTime.'
+                    <button class="btn btn-sm btn-actions btn-danger" type="submit" name="delete-access-time-submit" style="float: right; padding: 1px 0.5rem; margin: 0px;">Delete</button>
+                  </form>                
+                </li>';
+              }
+
+              // $resultCheck = mysqli_stmt_num_rows($stmt);
+              if (mysqli_num_rows ($result) == 0)
+              {
+                echo '<li class="list-group-item" style="color: red;">NULL</li>';
+              }
+
+              echo '
+              </ul>
+                  </div>';
+
+            }
+
+            /////////////////////////
+            // TIME SLOT: SATURDAY //
+            /////////////////////////
+            $sql = "SELECT * FROM sat_times where member_id=" . $memberId;
+            $stmt = mysqli_stmt_init($conn);
+
+            if (!mysqli_stmt_prepare($stmt, $sql))
+            {
+              //header("Location: /manage-member.php?error=sqlerror");
+              echo '<h1 data-wow-delay="0.1s" style="color: red;"> THERE HAS BEEN AN ERROR </h1>';
+              exit();
+            }
+            else
+            {
+              mysqli_stmt_execute($stmt);
+              $result = mysqli_stmt_get_result($stmt);
+
+              echo '
+              <div class="col">
+                    <h5>Sat</h5>
+                    <ul class="list-group">
+              ';
+                                
+              while ($row = mysqli_fetch_assoc($result))
+              {
+                $accessId = $row["access_id"];
+                $startTime = $row["start_time"];
+                $endTime = $row["end_time"];
+
+                echo '
+                <li class="list-group-item">
+                  <form action="php/change-member-status.inc.php" method="post" onsubmit="'.$confirmation.'">
+                    <input type="hidden" name="dayName" value="sat_times">
+                    <input type="hidden" name="accessId" value="'. $accessId .'">
+                    <input type="hidden" name="memberId" value="'. $memberId .'">
+                    '. $startTime.' - '.$endTime.'
+                    <button class="btn btn-sm btn-actions btn-danger" type="submit" name="delete-access-time-submit" style="float: right; padding: 1px 0.5rem; margin: 0px;">Delete</button>
+                  </form>                
+                </li>';
+              }
+
+              // $resultCheck = mysqli_stmt_num_rows($stmt);
+              if (mysqli_num_rows ($result) == 0)
+              {
+                echo '<li class="list-group-item" style="color: red;">NULL</li>';
+              }
+
+              echo '
+              </ul>
+                  </div>
+                </div>
+                
+                </div>';
+
+            }
+
+
+            ///////////////////////
+            // TIME SLOT: SUNDAY //
+            ///////////////////////
+            $sql = "SELECT * FROM sun_times where member_id=" . $memberId;
+            $stmt = mysqli_stmt_init($conn);
+
+            if (!mysqli_stmt_prepare($stmt, $sql))
+            {
+              //header("Location: /manage-member.php?error=sqlerror");
+              echo '<h1 data-wow-delay="0.1s" style="color: red;"> THERE HAS BEEN AN ERROR </h1>';
+              exit();
+            }
+            else
+            {
+              mysqli_stmt_execute($stmt);
+              $result = mysqli_stmt_get_result($stmt);
+
+              echo '
+              <div style="padding-top: 1.5rem;">
+                  <div class="row">
+                    <div class="col">
+                      <h5>Sun</h5>
+                      <ul class="list-group">
+              ';
+                                
+              while ($row = mysqli_fetch_assoc($result))
+              {
+                $accessId = $row["access_id"];
+                $startTime = $row["start_time"];
+                $endTime = $row["end_time"];
+
+                echo '
+                <li class="list-group-item">
+                  <form action="php/change-member-status.inc.php" method="post" onsubmit="'.$confirmation.'">
+                    <input type="hidden" name="dayName" value="sun_times">
+                    <input type="hidden" name="accessId" value="'. $accessId .'">
+                    <input type="hidden" name="memberId" value="'. $memberId .'">
+                    '. $startTime.' - '.$endTime.'
+                    <button class="btn btn-sm btn-actions btn-danger" type="submit" name="delete-access-time-submit" style="float: right; padding: 1px 0.5rem; margin: 0px;">Delete</button>
+                  </form>                
+                </li>';
+              }
+
+              // $resultCheck = mysqli_stmt_num_rows($stmt);
+              if (mysqli_num_rows ($result) == 0)
+              {
+                echo '<li class="list-group-item" style="color: red;">NULL</li>';
+              }
+
+              echo '
+              </ul>
+                    </div>
+
+                    <div class="col">
+                    </div>
+
+                    <div class="col">
+                    </div>
+                  </div>
+                </div>
+              </div>';
+
+            }
+
+            //////////////////////////////////////////////////////////////////////////////////////////
+
+            
+            //////////////////////////////////// DISPLAY NEW FORM ////////////////////////////////////
+
+            echo '<h2 style="padding-top:4rem;">Change Access Times</h2>';
+            //<p style="color: red;">Lorem</p>';
+
+            echo '
+            <form style="padding-bottom: 1rem;" action="php/change-member-status.inc.php" method="post">
+              <input type="hidden" name="memberid" value="'.  $memberId .'">
+
+              <div class="row">
+              <div class="col-sm">
+                <div class="form-label-group">
+                  <input type="time" id="inputStartTime" class="form-control form-control-facility" name="inputStartTime" placeholder="Start Time" required>
+                  <label for="inputStartTime">Start Time</label>
+                </div>
+              </div>
+              <div class="col-sm">
+                <div class="form-label-group">
+                  <input type="time" id="inputEndTime" class="form-control form-control-facility" name="inputEndTime" placeholder="End Time" required>
+                  <label for="inputEndTime">End Time</label>
+                </div>
+              </div>
+            </div>
+
+
+              <div class="form-check">
+                <input type="hidden" name="defaultCheckMon" value="0" />
+                <input class="form-check-input" type="checkbox" name="defaultCheckMon" value="mon_tims" id="defaultCheckMon">
+                <label class="form-check-label" for="defaultCheckMon">
+                  Monday
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input type="hidden" name="defaultCheckTue" value="0" />
+                <input class="form-check-input" type="checkbox" name="defaultCheckTue" value="mon_times" id="defaultCheckTue">
+                <label class="form-check-label" for="defaultCheckTue">
+                  Tuesday
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input type="hidden" name="defaultCheckWed" value="0" />
+                <input class="form-check-input" type="checkbox" name="defaultCheckWed" value="wed_times" id="defaultCheckWed">
+                <label class="form-check-label" for="defaultCheckWed">
+                  Wednesday
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input type="hidden" name="defaultCheckThu" value="0" />
+                <input class="form-check-input" type="checkbox" name="defaultCheckThu" value="thu_times" id="defaultCheckThu">
+                <label class="form-check-label" for="defaultCheckThu">
+                  Thursday
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input type="hidden" name="defaultCheckFri" value="0" />
+                <input class="form-check-input" type="checkbox" name="defaultCheckFri" value="fri_times" id="defaultCheckFri">
+                <label class="form-check-label" for="defaultCheckFri">
+                  Friday
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input type="hidden" name="defaultCheckSat" value="0" />
+                <input class="form-check-input" type="checkbox" name="defaultCheckSat" value="sat_times" id="defaultCheckSat">
+                <label class="form-check-label" for="defaultCheckSat">
+                  Saturday
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input type="hidden" name="defaultCheckSun" value="0" />
+                <input class="form-check-input" type="checkbox" name="defaultCheckSun" value="sun_times" id="defaultCheckSun">
+                <label class="form-check-label" for="defaultCheckSun">
+                  Sunday
+                </label>
+              </div>
+
+              <button style="margin-top: 1rem;" class="btn btn-lg btn-cyan btn-block" type="submit" name="change-member-times-submit">Change training times</button>
+            </form>';
+
+            
+
+            //////////////////////////////////////////////////////////////////////////////////////////
+                   
+        }
+
+
+
+        ?>
+
+            <!-- -->
+            <h2 style="padding-top:2rem;" >Access Times</h2>
+
+            <div>
+              <div class="row">
+                <div class="col">
+                  <h5>Mon</h5>
+                  <ul class="list-group">
+                    <li class="list-group-item">Mon <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>
+                    <li class="list-group-item">Mon <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>
+                    <li class="list-group-item">Mon <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>
+                    <li class="list-group-item">Mon <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>
+                  </ul>
+                </div>
+
+              
+                <div class="col">
+                  <h5>Tue</h5>
+                  <ul class="list-group">
+                  <li class="list-group-item">Mon <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>
+                  <li class="list-group-item">Mon <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>
+                  </ul>
+                </div>
+
+                <div class="col">
+                  <h5>Wed</h5>
+                  <ul class="list-group">
+                    <li class="list-group-item">Mon <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>
+                    <li class="list-group-item">Mon <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>
+                  </ul>
+                </div>
+              </div>
+
+              <div style="padding-top: 1.5rem;">
+                <div class="row">
+                  <div class="col">
+                    <h5>Thu</h5>
+                    <ul class="list-group">
+                    <li class="list-group-item">Mon <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>
+                    <li class="list-group-item">Mon <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>
+                    </ul>
+                  </div>
+
+                  <div class="col">
+                    <h5>Fri</h5>
+                    <ul class="list-group">
+                    <li class="list-group-item">Mon <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>
+                    <li class="list-group-item">Mon <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>
+                    </ul>
+                  </div>
+
+                  <div class="col">
+                    <h5>Sat</h5>
+                    <ul class="list-group">
+                    <li class="list-group-item">Mon <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>
+                    <li class="list-group-item">Mon <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>
+                    </ul>
+                  </div>
+                </div>
+                </div>
+
+                <div style="padding-top: 1.5rem;">
+                  <div class="row">
+                    <div class="col">
+                      <h5>Sun</h5>
+                      <ul class="list-group">
+                      <li class="list-group-item">Mon <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>
+                      <li class="list-group-item">Mon <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>
+                      </ul>
+                    </div>
+
+                    <div class="col">
+                    </div>
+
+                    <div class="col">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+        </main>
+      </div>
+    </div>
+
+
+    <?php include ("./inc/footer.inc.php"); ?>
+  </body>
+</html>

@@ -1,0 +1,9 @@
+Facility
+finaltest@test.com
+password
+
+Members
+fifthuser@test.com
+password
+
+(All members have <number>user@test.com  and password "password")

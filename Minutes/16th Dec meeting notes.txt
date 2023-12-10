@@ -1,0 +1,5 @@
+Point 4 is more for other developers whilst point 5 is more for how the user would use the program.
+
+Demonstration is your computer (so I assume localhost should be fine).
+
+Try checking out YouTube private livestreams for your app.

@@ -1,0 +1,24 @@
+All changes made for SafeGaze hosting (DB login credentials + removing deliverable)
+
+1. /php/dhb.inc.php
+Changed login credentials in order to access the university provided database.
+
+[FIXED]
+2. /inc/side-navbar.inc.php
+Removed everything including "/deliverable" because it doesn't apply to when it is hosted.
+[FIXED]
+
+2.1. /facility-info.php
+Removed "/deliverable" from two things.
+
+2.2. /livestream.php
+Removed "/deliverable" from three things.
+
+2.3. /notifications.php
+Removed "/deliverable" from two things.
+
+
+
+SafeGaze table data from the database was exported to:
+C:\Users\Reece Davies\Documents\Computer Science\Year 3\COMP3000 - Computing Project\COMP3000-Assignment-Reece_Davies\Database SQL code\
+Titled: A2 HOSTING safegaze_database (CONTAINS TABLE DATA).sql

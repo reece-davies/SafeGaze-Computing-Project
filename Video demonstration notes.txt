@@ -1,0 +1,23 @@
+Project vision
+Login to SafeGaze either as a facility, or a member (parent/participant)
+Get YouTube livestream setup
+	- Unlisted so people can't view it through YouTube app by searching for it
+	- Using capture card to encode video paired with OBS studio
+Link the livestream to SafeGaze
+View members
+	- Active (currently have access)
+	- Requests (new users requesting an account under your facility's name <ACCESS CODE> )
+	- Idle members (inactive disabled + rejected reqests)
+Manage members
+	- Change their status - verify-member page
+	- Change their access times for livestream - show access times
+Members access
+	- Overall access
+	- Access times
+Messages/notifications to members
+	- Urgency level
+
+There will be a "Getting Started" guide on the website
+Changes
+	- Implementation of better private hosting service (currently a proof of concept)
+Made a cool looking logo :)

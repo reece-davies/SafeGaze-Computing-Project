@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <?php include ("./inc/head.inc.php"); ?>
+
+  <body>
+    <?php include ("./inc/navbar.inc.php"); ?>
+
+    <div class="container-fluid">
+      <div class="row">
+
+        <?php include ("./inc/side-navbar.inc.php"); ?>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+
+        <?php
+
+        $memberId = $_GET['memberid'];
+        //echo '<p>Member ID = '. $memberId .'</p>';
+
+        require 'php/dbh.inc.php';
+
+
+        $sql = "SELECT * FROM members where facility_id=" . $_SESSION['facilityId'] . " AND member_id=" . $memberId;
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql))
+        {
+            //header("Location: /manage-member.php?error=sqlerror");
+            echo '<h1 data-wow-delay="0.1s" style="color: red;"> THERE HAS BEEN AN ERROR </h1>';
+            exit();
+        }
+        else
+        {
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+
+            $noValue = FALSE;
+                              
+            while ($row = mysqli_fetch_assoc($result))
+            {
+              // echo '<h1 onclick="changeProgramme('. $proId . ')" class="wow fadeInUp" data-wow-delay="0.1s" style="cursor: pointer;">'. $row["programme_title"] . '</h1>';
+
+              //$memberId;
+              $memberUsername = $row["member_username"];
+              $memberEmail = $row["email_address"];
+              $memberFirstName = $row["first_name"];
+              $memberLastName = $row["last_name"];
+              $memberDOB = $row["date_of_birth"];
+              $memberGender = $row["gender"];
+              $memberStatus = $row["status"];
+
+              $time09 = '0';
+              $time10 = '0';
+              $time11 = '0';
+              $time12 = '0';
+              $time13 = '0';
+              $time14 = '0';
+              $time15 = '0';
+              $time16 = '0';
+              $time17 = '0';
+              $time18 = '0';
+              $time19 = '0';
+              $time20 = '0';
+
+              if ($memberGender == null)
+              {
+                $memberGender = "NULL";
+              }
+
+              if ($memberDOB == null)
+              {
+                $memberDOB = "NULL";
+              }
+
+
+              $sql = "SELECT * FROM training_times where member_id=" . $memberId;
+              $stmt = mysqli_stmt_init($conn);
+
+              if (!mysqli_stmt_prepare($stmt, $sql))
+              {
+                //header("Location: /manage-member.php?error=sqlerror");
+                echo '<h1 data-wow-delay="0.1s" style="color: red;"> THERE HAS BEEN AN ERROR </h1>';
+                exit();
+              }
+              else
+              {
+                mysqli_stmt_execute($stmt);
+                $result = mysqli_stmt_get_result($stmt);
+
+                $noValue = FALSE;
+                                  
+                while ($row = mysqli_fetch_assoc($result))
+                {
+                  //$memberUsername = $row["member_username"];
+                  //$memberId;
+                  $time09 = $row["nine_am"];
+                  $time10 = $row['ten_am'];
+                  $time11 = $row['eleven_am'];
+                  $time12 = $row['twelve_pm'];
+                  $time13 = $row['one_pm'];
+                  $time14 = $row['two_pm'];
+                  $time15 = $row['three_pm'];
+                  $time16 = $row['four_pm'];
+                  $time17 = $row['five_pm'];
+                  $time18 = $row['six_pm'];
+                  $time19 = $row['seven_pm'];
+                  $time20 = $row['eight_pm'];
+                }
+              }
+              $noValue = TRUE;
+
+            }
+
+
+
+            // Echo details
+            echo '
+            <h2>Member : <a class="facility-colour isDisabled">'. $memberFirstName .' ' . $memberLastName . '</a></h2>
+
+            <div style="padding-top: 1rem; padding-bottom: 1rem;">
+              <ul class="list-group">
+                <!-- <li class="list-group-item active">Member ID: </li> -->
+                <li class="list-group-item"><b>Member ID: </b>' . $memberId . '</li>
+                <li class="list-group-item"><b>Username: </b>' . $memberUsername . '</li>
+                <li class="list-group-item"><b>Email: </b>' . $memberEmail . '</li>
+                <li class="list-group-item"><b>First name: </b>' . $memberFirstName . '</li>
+                <li class="list-group-item"><b>Last name: </b>' . $memberLastName . '</li>
+                <li class="list-group-item"><b>Date of birth: </b>' . $memberDOB . '</li>
+                <li class="list-group-item"><b>Gender: </b>' . $memberGender . '</li>';
+
+
+                if ($memberStatus == "active")
+                {
+                  echo '
+                      <li class="list-group-item"><b>Status: <div style="display: inline; color: #28a745;"> ACTIVE </div></b></li>
+                    </ul>
+                  </div>';
+                }
+                else if ($memberStatus == "inactive")
+                {
+                  echo '
+                      <li class="list-group-item"><b>Status: <div style="display: inline; color: #ffc107;"> INACTIVE </div></b></li>
+                    </ul>
+                  </div>';
+                }
+                else if ($memberStatus == "declined")
+                {
+                  echo '
+                      <li class="list-group-item"><b>Status: <div style="display: inline; color: red;"> DECLINED </div></b></li>
+                    </ul>
+                  </div>';
+                }
+                else
+                {
+                  echo '
+                      <li class="list-group-item"><b>Status: <div style="display: inline; color: #00aeda;"> PENDING </div></b></li>
+                    </ul>
+                  </div>';
+                }
+                
+
+
+            // Echo 'Change status' section
+            echo '
+            <form style="padding-top: 1rem; padding-bottom: 1rem;" action="php/change-member-status.inc.php" method="post">
+              <input type="hidden" name="memberid" value="'.  $memberId .'">
+              <select class="custom-select" name="inputStatus" required>
+                <option value="" selected>Select member status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+              <button style="margin-top: 1rem;" class="btn btn-lg btn-cyan btn-block" type="submit" name="change-member-status-submit">Change status</button>
+            </form>
+            ';
+
+            // Echo training times list
+            echo '
+            <h2 style="padding-top:2rem;" >Training times  (old structure)</h2>
+
+            <div>
+              <div class="row">
+                <div class="col">
+                  <ul class="list-group">';
+
+                  // 9am
+                  if ($time09 == "1")
+                  {
+                    echo '<li class="list-group-item">09:00 - 10:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>';
+                  }
+                  else
+                  {
+                    echo '<li class="list-group-item">09:00 - 10:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>';
+                  }
+
+                  // 10am
+                  if ($time10 == "1")
+                  {
+                    echo '<li class="list-group-item">10:00 - 11:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>';
+                  }
+                  else
+                  {
+                    echo '<li class="list-group-item">10:00 - 11:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>';
+                  }
+
+                  // 11am
+                  if ($time11 == "1")
+                  {
+                    echo '<li class="list-group-item">11:00 - 12:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>';
+                  }
+                  else
+                  {
+                    echo '<li class="list-group-item">11:00 - 12:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>';
+                  }
+
+                  // 12pm
+                  if ($time12 == "1")
+                  {
+                    echo '<li class="list-group-item">12:00 - 13:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>';
+                  }
+                  else
+                  {
+                    echo '<li class="list-group-item">12:00 - 13:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>';
+                  }
+
+                  // 1pm
+                  if ($time13 == "1")
+                  {
+                    echo '<li class="list-group-item">13:00 - 14:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>';
+                  }
+                  else
+                  {
+                    echo '<li class="list-group-item">13:00 - 14:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>';
+                  }
+
+                  // 2pm
+                  if ($time14 == "1")
+                  {
+                    echo '<li class="list-group-item">14:00 - 15:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>
+                            </ul>
+                        </div>';
+                  }
+                  else
+                  {
+                    echo '<li class="list-group-item">14:00 - 15:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>
+                            </ul>
+                        </div>';
+                  }
+
+                  echo '
+                  <div class="col">
+                    <ul class="list-group">';
+
+                    // 3pm
+                  if ($time15 == "1")
+                  {
+                    echo '<li class="list-group-item">15:00 - 16:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>';
+                  }
+                  else
+                  {
+                    echo '<li class="list-group-item">15:00 - 16:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>';
+                  }
+
+                  // 4pm
+                  if ($time16 == "1")
+                  {
+                    echo '<li class="list-group-item">16:00 - 17:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>';
+                  }
+                  else
+                  {
+                    echo '<li class="list-group-item">16:00 - 17:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>';
+                  }
+
+                  // 5pm
+                  if ($time17 == "1")
+                  {
+                    echo '<li class="list-group-item">17:00 - 18:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>';
+                  }
+                  else
+                  {
+                    echo '<li class="list-group-item">17:00 - 18:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>';
+                  }
+
+                  // 6pm
+                  if ($time18 == "1")
+                  {
+                    echo '<li class="list-group-item">18:00 - 19:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>';
+                  }
+                  else
+                  {
+                    echo '<li class="list-group-item">18:00 - 19:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>';
+                  }
+
+                  // 7pm
+                  if ($time19 == "1")
+                  {
+                    echo '<li class="list-group-item">19:00 - 20:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>';
+                  }
+                  else
+                  {
+                    echo '<li class="list-group-item">19:00 - 20:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>';
+                  }
+
+                  //8pm
+                  if ($time20 == "1")
+                  {
+                    echo '<li class="list-group-item">20:00 - 21:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>';
+                  }
+                  else
+                  {
+                    echo '<li class="list-group-item">20:00 - 21:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>';
+                  }
+
+                  echo '
+                  </ul>
+                </div>
+              </div>
+            </div>';
+
+
+            // Echo 'change training times' section
+            echo '
+            <h2 style="padding-top:2rem;" >Change training times (old structure)</h2>
+            <form style="padding-bottom: 1rem;" action="php/change-member-status.inc.php" method="post">
+              <input type="hidden" name="memberid" value="'.  $memberId .'">
+              <div class="form-check">
+                <input type="hidden" name="defaultCheck09" value="0" />
+                <input class="form-check-input" type="checkbox" name="defaultCheck09" value="1" id="defaultCheck09">
+                <label class="form-check-label" for="defaultCheck09">
+                  09:00 - 10:00
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input type="hidden" name="defaultCheck10" value="0" />
+                <input class="form-check-input" type="checkbox" name="defaultCheck10" value="1" id="defaultCheck10">
+                <label class="form-check-label" for="defaultCheck10">
+                  10:00 - 11:00
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input type="hidden" name="defaultCheck11" value="0" />
+                <input class="form-check-input" type="checkbox" name="defaultCheck11" value="1" id="defaultCheck11">
+                <label class="form-check-label" for="defaultCheck11">
+                  11:00 - 12:00
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input type="hidden" name="defaultCheck12" value="0" />
+                <input class="form-check-input" type="checkbox" name="defaultCheck12" value="1" id="defaultCheck12">
+                <label class="form-check-label" for="defaultCheck12">
+                  12:00 - 13:00
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input type="hidden" name="defaultCheck13" value="0" />
+                <input class="form-check-input" type="checkbox" name="defaultCheck13" value="1" id="defaultCheck13">
+                <label class="form-check-label" for="defaultCheck13">
+                  13:00 - 14:00
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input type="hidden" name="defaultCheck14" value="0" />
+                <input class="form-check-input" type="checkbox" name="defaultCheck14" value="1" id="defaultCheck14">
+                <label class="form-check-label" for="defaultCheck14">
+                  14:00 - 15:00
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input type="hidden" name="defaultCheck15" value="0" />
+                <input class="form-check-input" type="checkbox" name="defaultCheck15" value="1" id="defaultCheck15">
+                <label class="form-check-label" for="defaultCheck15">
+                  15:00 - 16:00
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input type="hidden" name="defaultCheck16" value="0" />
+                <input class="form-check-input" type="checkbox" name="defaultCheck16" value="1" id="defaultCheck16">
+                <label class="form-check-label" for="defaultCheck16">
+                  16:00 - 17:00
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input type="hidden" name="defaultCheck17" value="0" />
+                <input class="form-check-input" type="checkbox" name="defaultCheck17" value="1" id="defaultCheck17">
+                <label class="form-check-label" for="defaultCheck17">
+                  17:00 - 18:00
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input type="hidden" name="defaultCheck18" value="0" />
+                <input class="form-check-input" type="checkbox" name="defaultCheck18" value="1" id="defaultCheck18">
+                <label class="form-check-label" for="defaultCheck18">
+                  18:00 - 19:00
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input type="hidden" name="defaultCheck19" value="0" />
+                <input class="form-check-input" type="checkbox" name="defaultCheck19" value="1" id="defaultCheck19">
+                <label class="form-check-label" for="defaultCheck19">
+                  19:00 - 20:00
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input type="hidden" name="defaultCheck20" value="0" />
+                <input class="form-check-input" type="checkbox" name="defaultCheck20" value="1" id="defaultCheck20">
+                <label class="form-check-label" for="defaultCheck20">
+                  20:00 - 21:00
+                </label>
+              </div>
+
+              <button style="margin-top: 1rem;" class="btn btn-lg btn-cyan btn-block" type="submit" name="change-member-times-submit">Change training times</button>
+            </form>
+            
+            ';
+
+            
+            // If the value does not exist or belongs to someone else
+            if ($noValue == FALSE)
+            {
+              echo '<h1 data-wow-delay="0.1s" style="color: red;"> THERE HAS BEEN AN ERROR </h1>';
+              exit();
+            }                   
+        }
+
+
+
+        ?>
+
+
+            <h2 style="padding-top:2rem;" >Access Times</h2>
+
+            <div>
+              <div class="row">
+                <div class="col">
+                <h5>Mon</h5>
+                <ul class="list-group">
+                <li class="list-group-item">Mon <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>
+                <li class="list-group-item">Mon <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>
+                <li class="list-group-item">Mon <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>
+                <li class="list-group-item">Mon <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>
+                </ul>
+              </div>
+
+              
+              <div class="col">
+                <h5>Tue</h5>
+                <ul class="list-group">
+                <li class="list-group-item">Mon <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>
+                <li class="list-group-item">Mon <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>
+                </ul>
+              </div>
+
+              <div class="col">
+                <h5>Wed</h5>
+                <ul class="list-group">
+                <li class="list-group-item">Mon <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>
+                <li class="list-group-item">Mon <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>
+                </ul>
+              </div>
+            </div>
+
+            <div style="padding-top: 1.5rem;">
+              <div class="row">
+                <div class="col">
+                  <h5>Thu</h5>
+                  <ul class="list-group">
+                  <li class="list-group-item">Mon <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>
+                  <li class="list-group-item">Mon <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>
+                  </ul>
+              </div>
+
+              <div class="col">
+                <h5>Fri</h5>
+                <ul class="list-group">
+                <li class="list-group-item">Mon <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>
+                <li class="list-group-item">Mon <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>
+                </ul>
+              </div>
+
+              <div class="col">
+                <h5>Sat</h5>
+                <ul class="list-group">
+                <li class="list-group-item">Mon <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>
+                <li class="list-group-item">Mon <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>
+                </ul>
+              </div>
+            </div>
+
+            <div style="padding-top: 1.5rem;">
+              <div class="row">
+                <div class="col">
+                <h5>Sun</h5>
+                <ul class="list-group">
+                <li class="list-group-item">Mon <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>
+                <li class="list-group-item">Mon <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>
+                </ul>
+              </div>
+
+              <div class="col">
+                <ul class="list-group">
+                </ul>
+              </div>
+              
+              <div class="col">
+                <ul class="list-group">
+                </ul>
+              </div>
+            </div>
+
+
+            <h2 style="padding-top:4rem;">Change Access Times</h2>
+            <p style="color: red;">Lorem</p>
+
+        </main>
+      </div>
+    </div>
+
+
+    <?php include ("./inc/footer.inc.php"); ?>
+  </body>
+</html>

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <?php include ("./inc/head.inc.php"); ?>
+
+  <body>
+    <?php include ("./inc/navbar.inc.php"); ?>
+
+    <main role="main" class="container">
+      
+        <h2>Your Access Times</h2>
+
+      <?php
+
+        require 'php/dbh.inc.php';
+
+        $sql = "SELECT status FROM members where member_id=" . $_SESSION['memberId'];
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql))
+        {
+          
+          header("Location: /deliverable/index.php?error=sqlerror");
+          exit();
+        }
+        else
+        {
+          //mysqli_stmt_bind_param($stmt, s, $_SESSION['userId']);
+          mysqli_stmt_execute($stmt);
+
+          $result = mysqli_stmt_get_result($stmt);
+
+          while ($row = mysqli_fetch_assoc($result))
+          {
+            $memberStatus = $row["status"];
+          }
+        }
+
+        if ($memberStatus != "active")
+        {
+          echo 'user is not active - TAKE THEM AWAY!';
+          header("Location: /deliverable/verify-member.php");
+          exit();
+        }
+
+
+        $time09 = '0';
+        $time10 = '0';
+        $time11 = '0';
+        $time12 = '0';
+        $time13 = '0';
+        $time14 = '0';
+        $time15 = '0';
+        $time16 = '0';
+        $time17 = '0';
+        $time18 = '0';
+        $time19 = '0';
+        $time20 = '0';
+
+
+        // Get member's access times from DB
+        $sql = "SELECT * FROM training_times where member_id=" . $_SESSION['memberId'];
+        $stmt = mysqli_stmt_init($conn);
+
+        if (!mysqli_stmt_prepare($stmt, $sql))
+        {
+          header("Location: /deliverable/index.php?error=sqlerror");
+          exit();
+        }
+        else
+        {
+          //mysqli_stmt_bind_param($stmt, s, $_SESSION['userId']);
+          mysqli_stmt_execute($stmt);
+
+          $result = mysqli_stmt_get_result($stmt);
+
+          while ($row = mysqli_fetch_assoc($result))
+          {
+            $time09 = $row["nine_am"];
+            $time10 = $row['ten_am'];
+            $time11 = $row['eleven_am'];
+            $time12 = $row['twelve_pm'];
+            $time13 = $row['one_pm'];
+            $time14 = $row['two_pm'];
+            $time15 = $row['three_pm'];
+            $time16 = $row['four_pm'];
+            $time17 = $row['five_pm'];
+            $time18 = $row['six_pm'];
+            $time19 = $row['seven_pm'];
+            $time20 = $row['eight_pm'];
+          }
+        }
+
+        /* https://stackoverflow.com/questions/38377537/check-time-between-two-times/38377872
+        $current_time = date("h:i a");
+        echo $current_time;
+        $begin = "9:00 am";
+        $end   = "5:00 pm";
+
+        $date1 = DateTime::createFromFormat('H:i a', $current_time);
+        $date2 = DateTime::createFromFormat('H:i a', $begin);
+        $date3 = DateTime::createFromFormat('H:i a', $end);
+
+        if ($date1 > $date2 && $date1 < $date3) {
+          echo 'Here';
+        } else {
+          echo 'Not';
+        }
+        */
+
+        // Echo training times list
+        echo '
+        <div style="padding-top: 1rem; padding-bottom: 1rem;">
+          <div class="row">
+            <div class="col">
+              <ul class="list-group">';
+
+              // 9am
+              if ($time09 == "1")
+              {
+                echo '<li class="list-group-item">09:00 - 10:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>';
+              }
+              else
+              {
+                echo '<li class="list-group-item">09:00 - 10:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>';
+              }
+
+              // 10am
+              if ($time10 == "1")
+              {
+                echo '<li class="list-group-item">10:00 - 11:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>';
+              }
+              else
+              {
+                echo '<li class="list-group-item">10:00 - 11:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>';
+              }
+
+              // 11am
+              if ($time11 == "1")
+              {
+                echo '<li class="list-group-item">11:00 - 12:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>';
+              }
+              else
+              {
+                echo '<li class="list-group-item">11:00 - 12:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>';
+              }
+
+              // 12pm
+              if ($time12 == "1")
+              {
+                echo '<li class="list-group-item">12:00 - 13:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>';
+              }
+              else
+              {
+                echo '<li class="list-group-item">12:00 - 13:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>';
+              }
+
+              // 1pm
+              if ($time13 == "1")
+              {
+                echo '<li class="list-group-item">13:00 - 14:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>';
+              }
+              else
+              {
+                echo '<li class="list-group-item">13:00 - 14:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>';
+              }
+
+              // 2pm
+              if ($time14 == "1")
+              {
+                echo '<li class="list-group-item">14:00 - 15:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>
+                        </ul>
+                    </div>';
+              }
+              else
+              {
+                echo '<li class="list-group-item">14:00 - 15:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>
+                        </ul>
+                    </div>';
+              }
+
+              echo '
+              <div class="col">
+                <ul class="list-group">';
+
+                // 3pm
+              if ($time15 == "1")
+              {
+                echo '<li class="list-group-item">15:00 - 16:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>';
+              }
+              else
+              {
+                echo '<li class="list-group-item">15:00 - 16:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>';
+              }
+
+              // 4pm
+              if ($time16 == "1")
+              {
+                echo '<li class="list-group-item">16:00 - 17:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>';
+              }
+              else
+              {
+                echo '<li class="list-group-item">16:00 - 17:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>';
+              }
+
+              // 5pm
+              if ($time17 == "1")
+              {
+                echo '<li class="list-group-item">17:00 - 18:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>';
+              }
+              else
+              {
+                echo '<li class="list-group-item">17:00 - 18:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>';
+              }
+
+              // 6pm
+              if ($time18 == "1")
+              {
+                echo '<li class="list-group-item">18:00 - 19:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>';
+              }
+              else
+              {
+                echo '<li class="list-group-item">18:00 - 19:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>';
+              }
+
+              // 7pm
+              if ($time19 == "1")
+              {
+                echo '<li class="list-group-item">19:00 - 20:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>';
+              }
+              else
+              {
+                echo '<li class="list-group-item">19:00 - 20:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>';
+              }
+
+              //8pm
+              if ($time20 == "1")
+              {
+                echo '<li class="list-group-item">20:00 - 21:00 <b><div style="display: inline; color: #28a745;">(ACTIVE)</div></b></li>';
+              }
+              else
+              {
+                echo '<li class="list-group-item">20:00 - 21:00 <b><div style="display: inline; color: red;">(INACTIVE)</div></b></li>';
+              }
+
+              echo '
+              </ul>
+            </div>
+          </div>
+        </div>'; // End of training times list
+
+
+        $access = False;
+
+        date_default_timezone_set('Europe/London');
+        $currentTime = date("H:i");
+        //echo "Current time = " . $currentTime . "<br>";
+
+        // Compare access time with current time
+        if ("09:00" <= $currentTime && $currentTime < "10:00")
+        {
+          // Check if they have been granted access in this given time
+          if ($time09 == "1")
+          {
+            $access = True;
+          }
+        }
+        else if ("10:00" <= $currentTime && $currentTime < "11:00")
+        {
+          // Check if they have been granted access in this given time
+          if ($time10 == "1")
+          {
+            $access = True;
+          }
+        }
+        else if ("11:00" <= $currentTime && $currentTime < "12:00")
+        {
+          // Check if they have been granted access in this given time
+          if ($time11 == "1")
+          {
+            $access = True;
+          }
+        }
+        else if ("12:00" <= $currentTime && $currentTime < "13:00")
+        {
+          // Check if they have been granted access in this given time
+          if ($time12 == "1")
+          {
+            $access = True;
+          }
+        }
+        else if ("13:00" <= $currentTime && $currentTime < "14:00")
+        {
+          // Check if they have been granted access in this given time
+          if ($time13 == "1")
+          {
+            $access = True;
+          }
+        }
+        else if ("14:00" <= $currentTime && $currentTime < "15:00")
+        {
+          // Check if they have been granted access in this given time
+          if ($time14 == "1")
+          {
+            $access = True;
+          }
+        }
+        else if ("15:00" <= $currentTime && $currentTime < "16:00")
+        {
+          // Check if they have been granted access in this given time
+          if ($time15 == "1")
+          {
+            $access = True;
+          }
+        }
+        else if ("16:00" <= $currentTime && $currentTime < "17:00")
+        {
+          // Check if they have been granted access in this given time
+          if ($time16 == "1")
+          {
+            $access = True;
+          }
+        }
+        else if ("17:00" <= $currentTime && $currentTime < "18:00")
+        {
+          // Check if they have been granted access in this given time
+          if ($time17 == "1")
+          {
+            $access = True;
+          }
+        }
+        else if ("18:00" <= $currentTime && $currentTime < "19:00")
+        {
+          // Check if they have been granted access in this given time
+          if ($time18 == "1")
+          {
+            $access = True;
+          }
+        }
+        else if ("19:00" <= $currentTime && $currentTime < "20:00")
+        {
+          // Check if they have been granted access in this given time
+          if ($time19 == "1")
+          {
+            $access = True;
+          }
+        }
+        else if ("20:00" <= $currentTime && $currentTime < "21:00")
+        {
+          // Check if they have been granted access in this given time
+          if ($time20 == "1")
+          {
+            $access = True;
+          }
+        }
+
+
+        // Display stream if member has access ($access == True)
+        if ($access == True)
+        {
+          echo '
+          <div class="jumbotron" style="text-align: center;">
+            <h4>Current time: <span class="member-colour">'.$currentTime.'</span></h4>
+            <h4 class="lead">Livestream enabled. You are within your access times.</h4>
+          </div>
+
+          <h2 style="padding-top: 20px; padding-bottom: 10px;">Available livestreams</h2>
+          ';
+
+          //echo '<h2 style="padding-top: 20px; padding-bottom: 10px;">Available livestreams</h2>';
+
+          /////////////////////////////////////////////////////////////////////////////////////////
+          // Get member's access times from DB
+          $sql = "SELECT facility_id FROM members where member_id=" . $_SESSION['memberId'];
+          $stmt = mysqli_stmt_init($conn);
+
+          if (!mysqli_stmt_prepare($stmt, $sql))
+          {
+            echo '<h1 data-wow-delay="0.1s" style="color: red;"> THERE HAS BEEN AN ERROR </h1>';
+            exit();
+          }
+          else
+          {
+            //mysqli_stmt_bind_param($stmt, s, $_SESSION['userId']);
+            mysqli_stmt_execute($stmt);
+
+            $result = mysqli_stmt_get_result($stmt);
+
+            while ($row = mysqli_fetch_assoc($result))
+            {
+              $facilityId = $row["facility_id"];
+              //echo 'Facility ID = '. $facilityId;
+            }
+          }
+          /////////////////////////////////////////////////////////////////////////////////////////
+
+          // Get facility's name and username from DB
+          $sql = "SELECT facility_name, facility_username FROM facilities where facility_id=" . $facilityId;
+          $stmt = mysqli_stmt_init($conn);
+
+          if (!mysqli_stmt_prepare($stmt, $sql))
+          {
+            echo '<h1 data-wow-delay="0.1s" style="color: red;"> THERE HAS BEEN AN ERROR </h1>';
+            exit();
+          }
+          else
+          {
+            //mysqli_stmt_bind_param($stmt, s, $_SESSION['userId']);
+            mysqli_stmt_execute($stmt);
+
+            $result = mysqli_stmt_get_result($stmt);
+
+            while ($row = mysqli_fetch_assoc($result))
+            {
+              $facilityName = $row["facility_name"];
+              $facilityUsername = $row["facility_username"];
+              //echo $facilityName . '<br>';
+              //echo $facilityUsername;
+            }
+          }
+
+          // Get facility's livestreams from DB
+          $sql = "SELECT * FROM livestreams where facility_id=" . $facilityId;
+          $stmt = mysqli_stmt_init($conn);
+
+          if (!mysqli_stmt_prepare($stmt, $sql))
+          {
+            echo '<h1 data-wow-delay="0.1s" style="color: red;"> THERE HAS BEEN AN ERROR </h1>';
+            exit();
+          }
+          else
+          {
+            //mysqli_stmt_bind_param($stmt, s, $_SESSION['userId']);
+            mysqli_stmt_execute($stmt);
+
+            $result = mysqli_stmt_get_result($stmt);
+
+            while ($row = mysqli_fetch_assoc($result))
+            {
+              echo '
+                <div class="list-group" style="padding-bottom: 1.5rem;">
+                  <a class="list-group-item-member list-group-item list-group-item-action flex-column align-items-start" style="padding-bottom: 1.5rem;">
+                    <div class="d-flex w-100 justify-content-between" style="padding-bottom: 0.8rem;">
+                      <h3 class="member-livestream-title mb-1">'.$row["livestream_title"].'</h3>
+                      <p>Posted by: <span class="facility-colour">'.$facilityName.' ('.$facilityUsername.')</span></p>
+                    </div>
+
+                    <p class="mb-1" style="padding-bottom: 1rem;">'.$row["livestream_notes"].'</p>
+
+                    <div class="video-container"> <!-- Original source = https://www.youtube.com/embed/BnpjhKG11Kg --> 
+                      <iframe class="video-content" src="https://www.youtube.com/embed/'.$row["livestream_link"].'" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                  </a>
+                </div>
+              ';
+            }
+          }
+          
+
+          
+        }
+        else
+        {
+          echo '
+          <div class="jumbotron" style="text-align: center;">
+            <h4>Current time: <span style="color: red">'.$currentTime.'</span></h4>
+            <h4 class="lead">Livestream disabled. You are outside your access times.</h4>
+          </div>
+          ';
+        }
+
+      ?>
+
+      <!--
+      <div>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/BnpjhKG11Kg" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      -->
+
+      
+      <!-- https://stackoverflow.com/questions/39275889/how-to-embed-new-youtubes-live-video-permanent-url
+      <div class="sqs-block embed-block sqs-block-embed" data-block-type="22" >
+        <div class="sqs-block-content"><div class="intrinsic" style="max-width:100%">
+            <div class="embed-block-wrapper embed-block-provider-YouTube" style="padding-bottom:56.20609%;">
+                <iframe allow="autoplay; fullscreen" scrolling="no" data-image-dimensions="854x480" allowfullscreen="true" src="https://www.youtube.com/embed/live_stream?channel=UC869NIQAR-K5uvbTWz20Y2Q" width="854" data-embed="true" frameborder="0" title="YouTube embed" class="embedly-embed" height="480">
+                </iframe>
+            </div>
+        </div>
+      </div> -->
+
+      <!--
+        <div style="padding: 30px;">
+          <h1> Livestream title </h1>
+          <p> Livestream notes </p>
+          <div class="video-container">
+            <iframe class="video-content" src="https://www.youtube.com/embed/BnpjhKG11Kg" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+        </div>
+      -->
+
+    </main>
+
+    <?php include ("./inc/footer.inc.php"); ?>
+  </body>
+</html>
